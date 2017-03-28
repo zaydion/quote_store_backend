@@ -1,16 +1,16 @@
 class QuotesController < ApplicationController
+  before_action :set_quote, only: [:show, :edit, :update, :destroy]
+
   def index
     @quotes = Quote.all
     render json: @quotes, status: :ok
   end
 
   def show
-    @quote = Quote.find(params[:id])
     render json: @quote, status: :ok
   end
 
   def new
-    @quote = Quote.new
   end
 
   def create
@@ -22,13 +22,21 @@ class QuotesController < ApplicationController
   end
 
   def update
+    @quote.update(quote_params)
+    render json: @quote, status: :ok
   end
 
   def destroy
+    @quote.destroy
+    head :no_content, status: :ok
   end
 
   private
   def quote_params
-    require(:quote).permit(:title, :body, :price, :size)
+    params.require(:quote).permit!
+  end
+
+  def set_quote
+    @quote = Quote.find(params[:id])
   end
 end
